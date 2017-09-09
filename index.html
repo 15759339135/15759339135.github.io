@@ -1,17 +1,105 @@
 <html>
+    
     <head>
         <meta charset="utf-8">
         <meta name="author" content="王超锋">
-        <title>主页</title>
+        <title>图片机器人</title>
+        <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js "></script>
         <style>
-          
-            body{
+            html,
+            body {
                 height: 100%;
-                background-color: red;
+                margin: 0;
+                padding: 0;
+            }
+    
+            main {
+                width: 80%;
+                /* height: 100%; */
+                margin: 0 auto;
+                border: 1px solid orange;
+            }
+    
+            h2 {
+                color: red;
+            }
+    
+            textarea {
+                width: 600px;
+                height: 200px;
+                border: 1px solid red;
+                resize: none;
+            }
+    
+            span {
+                display: block;
+                width: 80%;
+                border: 3px dotted red;
+                margin-top: 40px;
+            }
+    
+            a {
+                text-decoration: none;
+                color: red;
+                font-size: 16px;
             }
         </style>
     </head>
+    
     <body>
-        
+        <main>
+            <h1>图片机器人</h1>
+            <h2>请在下面输入框输入和机器人对话的内容</h2>
+            <textarea cols="30" rows="10" class="show"></textarea>
+            <span></span>
+            <section>
+    
+            </section>
+        </main>
+    
+        <script>
+            var show = document.querySelector('.show');
+            var section = document.querySelector('section');
+            show.onkeyup = function (e) {
+                if (e.keyCode == 13) {
+                    // 创建XHR对象
+                    var xhr = new XMLHttpRequest();
+                    // 监听状态的改变
+                    xhr.onreadystatechange = function () {
+                        if (xhr.readyState == 4) {
+                            var data = JSON.parse(xhr.responseText);
+                            console.log(data);
+                            var str = '';
+                            if (data.code == 100000) {
+                                str += `
+                       <form >
+                       <label style = 'color:blue'>提问:</label> <input type="text" class='ask' value= '${show.value}' style = 'color:green;border:none;width:60%'> <br><br>
+                       <label style = 'color:blue'>回答:</label> <input type="text" value= '${data.text}' style = 'color:red;border:none;width:60%'>
+                       </form>
+                       <span style = ' display: block;width: 80%; border: 1px dotted green; margin-top: 10px;'></span>
+                     `
+                            }
+                            if (data.code == 200000) {
+                                str += `
+                        <form >
+                       <label style = 'color:blue'>提问:</label> <input type="text" class='ask' value= '${show.value}' style = 'color:green;border:none;width:60%'> <br><br>
+                       <label style = 'color:blue'>回答:</label> <a href="${data.url}" >${data.text}</a>
+                       </form>
+                       <span style = ' display: block;width: 80%; border: 1px dotted green; margin-top: 10px;'></span>
+                     `
+                            }
+    
+                            section.innerHTML += str;
+                            show.value = '';
+                        }
+                    }
+                    // 创建请求
+                    xhr.open("get", `http://www.tuling123.com/openapi/api?key=46aba2cf9623419c913f1b92328e2009&info=${show.value}`, true)
+                    // 发送请求
+                    xhr.send();
+                }
+            }
+        </script>
     </body>
-</html>
+    
+    </html>
